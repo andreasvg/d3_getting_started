@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>D3 Super Simple</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <style>
+    svg {
+      width: 1000px;
+      height: 1000px;
+      transform-origin: 0 0;
+      fill: orange;
+    }
+
+  </style>
+</head>
+<body>
+  <script type="text/javascript">
+    var values = [0, 2, 8, 1, 2];
+    var initialX = 15;
+    var deltaX = 25;
+    var initialY = 15;
+    var deltaY = 25;
+
+    var currentX = initialX;
+    var currentY = initialY;
+
+    function drawRectangle(group, height) {
+      group
+      .append("rect")
+      .attr("fill", "blue")
+      .attr("height", height)
+      .attr("width", 5)
+      .attr("x", currentX)
+      .attr("y", currentY)
+      ;
+
+      currentX += deltaX;
+    }
+
+    function drawCircle(group, radius) {
+      group
+      .append("circle")
+      //.attr("fill", "blue")
+      .attr("r", radius)
+      .attr("cx", currentX)
+      .attr("cy", currentY)
+      ;
+
+      group.append("text")
+        .text(radius)
+        .attr("fill", "black")
+        .attr("x", currentX)
+        .attr("y", currentY)
+        .attr("font-size", "3pt")
+        ;
+
+      currentX += deltaX;
+    }
+
+    function drawProportionalCircle(group, radius) {
+      group
+      .append("circle")
+      .attr("fill", "blue")
+      .attr("r", Math.sqrt(radius))
+      .attr("cx", currentX)
+      .attr("cy", currentY)
+      ;
+
+      group.append("text")
+        .text(radius)
+        .attr("fill", "black")
+        .attr("x", currentX)
+        .attr("y", currentY)
+        .attr("font-size", "3pt")
+        ;
+
+      currentX += deltaX;
+    }    
+
+    var svg = d3.select("body")
+      .append("svg")
+      .attr("transform", "scale(8)");
+
+    var gCirc = svg.append("g");
+    gCirc.attr("class", "circleGroup");
+
+    values.forEach(v => drawCircle(gCirc, v));
+
+    currentX = initialX;
+    currentY += deltaY;
+
+    var gRect = svg.append("g");
+    gRect.attr("class", "rectangleGroup");
+
+    values.forEach(v => drawRectangle(gRect, v));
+
+    currentX = initialX;
+    currentY += deltaY;
+
+    var gPropCirc = svg.append("g");
+    gPropCirc.attr("class", "proportionalCircleGroup");
+
+    values.forEach(v => drawProportionalCircle(gPropCirc, v));
+     
+  </script>
+</body>
+</html>
