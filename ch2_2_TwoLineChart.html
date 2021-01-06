@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>D3 Multi Line Chart</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <style>
+        svg {
+            border: 1px solid gray;
+        }
+
+  </style>
+</head>
+<body>
+  <script type="text/javascript">
+    var data = [{ date: "10/25/2018", value1: 1, value2: 0 },
+    { date: "10/26/2018", value1: 3, value2: 0 },
+    { date: "10/27/2018", value1: 0, value2: 25 },
+    { date: "10/28/2018", value1: 0, value2: 62 },
+    { date: "10/29/2018", value1: 5, value2: 5 },
+    { date: "10/30/2018", value1: 8, value2: 37 },
+    { date: "10/31/2018", value1: 7, value2: 12 },
+    { date: "11/01/2018", value1: 11, value2: 55 },
+    { date: "11/02/2018", value1: 23, value2: 44 },
+    { date: "11/03/2018", value1: 13, value2: 53 },
+    { date: "11/04/2018", value1: 15, value2: 18 },
+    { date: "11/05/2018", value1: 37, value2: 12 },
+    { date: "11/06/2018", value1: 32, value2: 60 },
+    { date: "11/07/2018", value1: 38, value2: 60 },
+    { date: "11/08/2018", value1: 42, value2: 60 },
+    { date: "11/09/2018", value1: 43, value2: 3 },
+    { date: "11/10/2018", value1: 21, value2: 3 },
+    { date: "11/11/2018", value1: 24, value2: 2 },
+    { date: "11/12/2018", value1: 50, value2: 15 },
+    { date: "11/13/2018", value1: 53, value2: 3 },
+    { date: "11/14/2018", value1: 59, value2: 15 },
+    { date: "11/15/2018", value1: 61, value2: 3 },
+    { date: "11/16/2018", value1: 62, value2: 19 }];
+
+    var margin = 50;
+
+    var width = 1024;
+    var height = 768;
+
+    var dataGroup = d3.select("body")
+      .append("svg")
+      .attr("width", width + margin)
+      .attr("height", height + 2 * margin)
+      .append("g")
+      .attr("transform", "translate(" + margin + ", " + margin + ")");
+     
+    // create a function pointer to the timeParse function:
+    var parseTime = d3.timeParse("%m/%d/%Y");
+
+    // convert each date string to a date variable:
+    data.forEach(d => {
+      d.date = parseTime(d.date);
+    });
+
+    // define our x and y scale mapping of the domain to ranges:
+    var x = d3.scaleTime()
+          .domain(d3.extent(data, function(d) {return d.date; }))
+          .range([ 0, width ]);
+
+    var y = d3.scaleLinear()
+      .domain(d3.extent(data, function(d) { return d.value1; }))
+      .range([ height , 0]);
+
+    // determine the properties to plot:
+    var propertyNames = [];
+
+    for (var name in data[0]) {
+        if (name == "date") {
+            continue;
+        }
+        propertyNames.push(name);
+        console.log("Property: " + name);
+    }      
+
+    // add our lines to the chart, using the data:
+    var colors = d3.schemeCategory10;
+
+    for (var i = 0; i < propertyNames.length; i++) {
+        plotVariable(propertyNames[i], colors[i]);
+    }
+
+    // add a group element for the X axis:
+    var xAxisGroup = dataGroup
+        .append("g")
+        .attr("class", "xAxisGroup")
+        .attr("transform", "translate(0," + height + ")")
+
+    // xAxis is a function pointer
+    var xAxis = d3.axisBottom(x)
+        .tickFormat(d3.timeFormat("%Y-%m-%d"));
+
+    // build the X axis and append to the x axis group:
+    xAxis(xAxisGroup);
+
+    // add a group element for the Y axis:
+    var yAxisGroup = dataGroup
+        .append("g")
+        .attr("class", "yAxisGroup")
+
+    // yAxis is a function pointer:
+    var yAxis = d3.axisLeft(y);
+
+    // build the Y axis and append to the y axis group:
+    yAxis(yAxisGroup);
+
+    function plotVariable(propertyName, color) {
+      var line2 = d3.line()
+        .x(d => x(d.date))
+        .y(d => y(d[propertyName]));   
+
+      dataGroup.append("path")
+          .data([data])
+          .attr("fill", "none")
+          .attr("stroke", color)
+          .attr("d", line2);      
+    }
+
+  </script>
+</body>
+</html>
